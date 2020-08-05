@@ -1,9 +1,15 @@
 #include <array>
 #include <cstddef>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 
 const size_t EMULATED_MEMORY_SIZE = 4096;
+
+void print_opcode_hex(unsigned short opcode) {
+    std::cout << std::hex << std::setfill('0') << std::setw(4) << opcode
+              << std::endl;
+}
 
 int main(int argc, char **argv) {
     if (argc < 2) {
@@ -24,9 +30,10 @@ int main(int argc, char **argv) {
     for (size_t i = 0; i < memory.size(); i += 2) {
         const auto byte_1 = memory.at(i);
         const auto byte_2 = memory.at(i + 1);
-        const auto opcode = (std::to_integer<unsigned short>(byte_2) << 8) |
-                            std::to_integer<unsigned short>(byte_1);
-        std::cout << std::hex << opcode << std::endl;
+        const auto opcode = static_cast<unsigned short>(
+            (std::to_integer<unsigned short>(byte_1) << 8) |
+            std::to_integer<unsigned short>(byte_2));
+        print_opcode_hex(opcode);
     }
     return 0;
 }
