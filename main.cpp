@@ -14,7 +14,7 @@ using Opcode = unsigned short;
 
 class VirtualMachine {
   private:
-    unsigned short program_counter;
+    size_t program_counter;
     unsigned short index_register;
     std::byte delay_timer;
     std::byte sound_timer;
@@ -25,10 +25,12 @@ class VirtualMachine {
   public:
     VirtualMachine();
     void load_rom(const std::filesystem::path &rom_file_path);
+    void run();
 };
 
 VirtualMachine::VirtualMachine()
-    : program_counter{0}, index_register{0}, delay_timer{std::byte{0}},
+    : program_counter{RESERVED_MEMORY_SPACE}, index_register{0},
+      delay_timer{std::byte{0}},
       sound_timer{std::byte{0}}, memory{}, registers{}, stack{} {}
 
 void VirtualMachine::load_rom(const std::filesystem::path &rom_file_path) {
@@ -52,6 +54,57 @@ void print_opcode_hex(const Opcode opcode) {
               << std::endl;
 }
 
+void VirtualMachine::run() {
+    while (true) {
+        if (this->program_counter >= EMULATED_MEMORY_SIZE) {
+            break;
+        }
+        const auto byte_1 = this->memory[this->program_counter];
+        const auto byte_2 = this->memory[this->program_counter + 1];
+        const Opcode opcode =
+            static_cast<Opcode>((std::to_integer<unsigned short>(byte_1) << 8) |
+                                std::to_integer<unsigned short>(byte_2));
+        switch (opcode & 0xF000) {
+        case 0xA000: {
+            this->index_register = opcode & 0x0FFF;
+            this->program_counter += 2;
+            std::cout << "Set index to" << this->index_register << std::endl;
+            break;
+        }
+        case 0xD000: {
+            std::cout << "Display" << std::endl;
+            this->program_counter += 2;
+            break;
+        }
+        case 0x6000: {
+            const auto reg = opcode & 0x0F00;
+            const auto value = opcode & 0x00FF;
+            std::cout << "Add value " << value << " to register " << reg
+                      << std::endl;
+            this->program_counter += 2;
+            break;
+        }
+        case 0x1000: {
+            const auto position = opcode & 0x0FFF;
+            std::cout << "Jump to " << std::hex << position << std::endl;
+            this->program_counter += 2;
+            break;
+        }
+        case 0x0000: {
+            std::cout << "Clear screan" << std::endl;
+            this->program_counter += 2;
+            break;
+        }
+        default: {
+            std::cout << "Unknown opcode " << std::hex << std::setfill('0')
+                      << std::setw(4) << opcode << std::endl;
+            this->program_counter += 2;
+            break;
+        }
+        }
+    }
+}
+
 int main(int argc, char **argv) {
     if (argc < 2) {
         std::cerr << "Please, provide a path to the CHIP-8 game file"
@@ -67,5 +120,6 @@ int main(int argc, char **argv) {
     }
     std::cout << "Opening ROM file " << rom_file_path << std::endl;
     virtual_machine.load_rom(rom_file_path);
+    virtual_machine.run();
     return 0;
 }
