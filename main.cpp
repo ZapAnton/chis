@@ -64,16 +64,18 @@ void VirtualMachine::run() {
         const Opcode opcode =
             static_cast<Opcode>((std::to_integer<unsigned short>(byte_1) << 8) |
                                 std::to_integer<unsigned short>(byte_2));
+        this->program_counter += 2;
+        if (opcode == 0x0000) {
+            continue;
+        }
         switch (opcode & 0xF000) {
         case 0xA000: {
             this->index_register = opcode & 0x0FFF;
-            this->program_counter += 2;
             std::cout << "Set index to" << this->index_register << std::endl;
             break;
         }
         case 0xD000: {
             std::cout << "Display" << std::endl;
-            this->program_counter += 2;
             break;
         }
         case 0x6000: {
@@ -81,24 +83,35 @@ void VirtualMachine::run() {
             const auto value = opcode & 0x00FF;
             std::cout << "Add value " << value << " to register " << reg
                       << std::endl;
-            this->program_counter += 2;
             break;
         }
         case 0x1000: {
             const auto position = opcode & 0x0FFF;
-            std::cout << "Jump to " << std::hex << position << std::endl;
-            this->program_counter += 2;
+            this->program_counter = static_cast<size_t>(position);
+            std::cout << "Jump to " << this->program_counter << std::endl;
             break;
         }
         case 0x0000: {
-            std::cout << "Clear screan" << std::endl;
-            this->program_counter += 2;
+            switch (opcode & 0x000F) {
+            case 0x0000: {
+                std::cout << "Clear screen" << std::endl;
+                break;
+            }
+            case 0x000E: {
+                std::cout << "Return from subrutine" << std::endl;
+                break;
+            }
+            default: {
+                std::cout << "Unknown opcode " << std::hex << std::setfill('0')
+                          << std::setw(4) << opcode << std::endl;
+                break;
+            }
+            }
             break;
         }
         default: {
             std::cout << "Unknown opcode " << std::hex << std::setfill('0')
                       << std::setw(4) << opcode << std::endl;
-            this->program_counter += 2;
             break;
         }
         }
