@@ -11,7 +11,7 @@
 
 const size_t EMULATED_MEMORY_SIZE = 4096;
 const size_t EMULATED_REGISTER_COUNT = 16;
-const size_t RESERVED_MEMORY_SPACE = 512;
+const size_t RESERVED_MEMORY_SPACE = 0x200;
 using Opcode = unsigned short;
 
 class VirtualMachine {
@@ -103,8 +103,8 @@ void VirtualMachine::run() {
         }
         case 0x1000: {
             const auto position = opcode & 0x0FFF;
+            std::cout << "Jump to " << position << std::endl;
             this->program_counter = static_cast<size_t>(position);
-            std::cout << "Jump to " << this->program_counter << std::endl;
             break;
         }
         case 0x0000: {
@@ -118,16 +118,14 @@ void VirtualMachine::run() {
                 break;
             }
             default: {
-                std::cout << "Unknown opcode " << std::hex << std::setfill('0')
-                          << std::setw(4) << opcode << std::endl;
+                std::cout << "Unknown opcode " << opcode << std::endl;
                 break;
             }
             }
             break;
         }
         default: {
-            std::cout << "Unknown opcode " << std::hex << std::setfill('0')
-                      << std::setw(4) << opcode << std::endl;
+            std::cout << "Unknown opcode " << opcode << std::endl;
             break;
         }
         }
