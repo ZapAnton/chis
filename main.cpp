@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <array>
 #include <cstddef>
 #include <filesystem>
@@ -5,6 +6,7 @@
 #include <iomanip>
 #include <iostream>
 #include <stack>
+#include <string>
 #include <vector>
 
 const size_t EMULATED_MEMORY_SIZE = 4096;
@@ -14,6 +16,7 @@ using Opcode = unsigned short;
 
 class VirtualMachine {
   private:
+    size_t rom_size;
     size_t program_counter;
     unsigned short index_register;
     std::byte delay_timer;
@@ -26,10 +29,11 @@ class VirtualMachine {
     VirtualMachine();
     void load_rom(const std::filesystem::path &rom_file_path);
     void run();
+    void dump_memory();
 };
 
 VirtualMachine::VirtualMachine()
-    : program_counter{RESERVED_MEMORY_SPACE}, index_register{0},
+    : rom_size{0}, program_counter{RESERVED_MEMORY_SPACE}, index_register{0},
       delay_timer{std::byte{0}},
       sound_timer{std::byte{0}}, memory{}, registers{}, stack{} {}
 
@@ -47,11 +51,23 @@ void VirtualMachine::load_rom(const std::filesystem::path &rom_file_path) {
     for (size_t i = 0; i < temp_buffer.size(); ++i) {
         this->memory[i + RESERVED_MEMORY_SPACE] = temp_buffer.at(i);
     }
+    this->rom_size = static_cast<size_t>(rom_file_size);
 }
 
 void print_opcode_hex(const Opcode opcode) {
     std::cout << std::hex << std::setfill('0') << std::setw(4) << opcode
               << std::endl;
+}
+
+void VirtualMachine::dump_memory() {
+    for (size_t i = 0; i < RESERVED_MEMORY_SPACE + this->rom_size; ++i) {
+        if (i % 20 == 0) {
+            std::cout << std::endl;
+        }
+        std::cout << std::hex << std::setfill('0') << std::setw(2)
+                  << std::to_integer<int>(this->memory[i]) << " ";
+    }
+    std::cout << std::endl;
 }
 
 void VirtualMachine::run() {
@@ -133,6 +149,10 @@ int main(int argc, char **argv) {
     }
     std::cout << "Opening ROM file " << rom_file_path << std::endl;
     virtual_machine.load_rom(rom_file_path);
+    if (argc > 2 && std::string(argv[2]) == "--dump") {
+        virtual_machine.dump_memory();
+        return 0;
+    }
     virtual_machine.run();
     return 0;
 }
