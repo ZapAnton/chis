@@ -8,6 +8,7 @@
 #include <stack>
 #include <string>
 #include <vector>
+#include "SDL2/SDL.h"
 
 const size_t EMULATED_MEMORY_SIZE = 4096;
 const size_t EMULATED_REGISTER_COUNT = 16;
