@@ -1,37 +1,15 @@
+#include "virtual_machine.h"
 #include <algorithm>
-#include <array>
-#include <cstddef>
-#include <filesystem>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <stack>
 #include <string>
 #include <vector>
-#include "SDL2/SDL.h"
 
-const size_t EMULATED_MEMORY_SIZE = 4096;
-const size_t EMULATED_REGISTER_COUNT = 16;
-const size_t RESERVED_MEMORY_SPACE = 0x200;
-using Opcode = unsigned short;
-
-class VirtualMachine {
-  private:
-    size_t rom_size;
-    size_t program_counter;
-    unsigned short index_register;
-    std::byte delay_timer;
-    std::byte sound_timer;
-    std::array<std::byte, EMULATED_MEMORY_SIZE> memory;
-    std::array<std::byte, EMULATED_REGISTER_COUNT> registers;
-    std::stack<unsigned short> stack;
-
-  public:
-    VirtualMachine();
-    void load_rom(const std::filesystem::path &rom_file_path);
-    void run();
-    void dump_memory();
-};
+void print_opcode_hex(const Opcode opcode) {
+    std::cout << std::hex << std::setfill('0') << std::setw(4) << opcode
+              << std::dec << std::endl;
+}
 
 VirtualMachine::VirtualMachine()
     : rom_size{0}, program_counter{RESERVED_MEMORY_SPACE}, index_register{0},
@@ -53,11 +31,6 @@ void VirtualMachine::load_rom(const std::filesystem::path &rom_file_path) {
         this->memory[i + RESERVED_MEMORY_SPACE] = temp_buffer.at(i);
     }
     this->rom_size = static_cast<size_t>(rom_file_size);
-}
-
-void print_opcode_hex(const Opcode opcode) {
-    std::cout << std::hex << std::setfill('0') << std::setw(4) << opcode
-              << std::dec << std::endl;
 }
 
 void VirtualMachine::dump_memory() {
@@ -140,27 +113,4 @@ void VirtualMachine::run() {
         }
         }
     }
-}
-
-int main(int argc, char **argv) {
-    if (argc < 2) {
-        std::cerr << "Please, provide a path to the CHIP-8 game file"
-                  << std::endl;
-        return -1;
-    }
-    VirtualMachine virtual_machine;
-    const std::filesystem::path rom_file_path{argv[1]};
-    if (!std::filesystem::exists(rom_file_path)) {
-        std::cerr << "Provided path does not exist: " << rom_file_path
-                  << std::endl;
-        return -1;
-    }
-    std::cout << "Opening ROM file " << rom_file_path << std::endl;
-    virtual_machine.load_rom(rom_file_path);
-    if (argc > 2 && std::string(argv[2]) == "--dump") {
-        virtual_machine.dump_memory();
-        return 0;
-    }
-    virtual_machine.run();
-    return 0;
 }
