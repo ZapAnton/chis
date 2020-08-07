@@ -14,7 +14,7 @@ void print_opcode_hex(const Opcode opcode) {
 VirtualMachine::VirtualMachine()
     : rom_size{0}, program_counter{RESERVED_MEMORY_SPACE}, index_register{0},
       delay_timer{std::byte{0}},
-      sound_timer{std::byte{0}}, memory{}, registers{}, stack{} {}
+      sound_timer{std::byte{0}}, memory{}, registers{}, stack{}, display{nullptr} {}
 
 void VirtualMachine::load_rom(const std::filesystem::path &rom_file_path) {
     // TODO: Add error handling

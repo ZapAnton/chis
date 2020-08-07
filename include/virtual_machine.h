@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <filesystem>
 #include <stack>
+#include <abstract_display.h>
 
 using Opcode = unsigned short;
 const size_t EMULATED_MEMORY_SIZE = 4096;
@@ -21,6 +22,7 @@ class VirtualMachine {
     std::array<std::byte, EMULATED_MEMORY_SIZE> memory;
     std::array<uint8_t, EMULATED_REGISTER_COUNT> registers;
     std::stack<uint16_t> stack;
+    AbstractDisplay* display;
 
   public:
     VirtualMachine();
