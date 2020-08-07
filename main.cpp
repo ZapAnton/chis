@@ -56,7 +56,7 @@ void VirtualMachine::load_rom(const std::filesystem::path &rom_file_path) {
 
 void print_opcode_hex(const Opcode opcode) {
     std::cout << std::hex << std::setfill('0') << std::setw(4) << opcode
-              << std::endl;
+              << std::dec << std::endl;
 }
 
 void VirtualMachine::dump_memory() {
@@ -65,7 +65,8 @@ void VirtualMachine::dump_memory() {
             std::cout << std::endl;
         }
         std::cout << std::hex << std::setfill('0') << std::setw(2)
-                  << std::to_integer<int>(this->memory[i]) << " ";
+                  << std::to_integer<unsigned short>(this->memory[i])
+                  << std::dec << " ";
     }
     std::cout << std::endl;
 }
@@ -81,13 +82,14 @@ void VirtualMachine::run() {
             static_cast<Opcode>((std::to_integer<unsigned short>(byte_1) << 8) |
                                 std::to_integer<unsigned short>(byte_2));
         this->program_counter += 2;
+        print_opcode_hex(opcode);
         if (opcode == 0x0000) {
             continue;
         }
         switch (opcode & 0xF000) {
         case 0xA000: {
             this->index_register = opcode & 0x0FFF;
-            std::cout << "Set index to" << this->index_register << std::endl;
+            std::cout << "Set index to " << this->index_register << std::endl;
             break;
         }
         case 0xD000: {
