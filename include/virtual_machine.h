@@ -19,8 +19,8 @@ class VirtualMachine {
     std::byte delay_timer;
     std::byte sound_timer;
     std::array<std::byte, EMULATED_MEMORY_SIZE> memory;
-    std::array<std::byte, EMULATED_REGISTER_COUNT> registers;
-    std::stack<unsigned short> stack;
+    std::array<uint8_t, EMULATED_REGISTER_COUNT> registers;
+    std::stack<uint16_t> stack;
 
   public:
     VirtualMachine();

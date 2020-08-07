@@ -63,7 +63,6 @@ void VirtualMachine::run() {
         switch (opcode & 0xF000) {
         case 0xA000: {
             this->index_register = opcode & 0x0FFF;
-            std::cout << "Set index to " << this->index_register << std::endl;
             break;
         }
         case 0xD000: {
@@ -71,22 +70,19 @@ void VirtualMachine::run() {
             break;
         }
         case 0x6000: {
-            const auto reg = (opcode & 0x0F00) >> 8;
-            const auto value = opcode & 0x00FF;
-            std::cout << "Set value " << value << " in register " << reg
-                      << std::endl;
+            const std::array<uint8_t, EMULATED_REGISTER_COUNT>::size_type register_index = (opcode & 0x0F00) >> 8;
+            const auto value = static_cast<uint8_t>(opcode & 0x00FF);
+            this->registers[register_index] = value;
             break;
         }
         case 0x7000: {
-            const auto reg = (opcode & 0x0F00) >> 8;
-            const auto value = opcode & 0x00FF;
-            std::cout << "Add value " << value << " to register " << reg
-                      << std::endl;
+            const std::array<uint8_t, EMULATED_REGISTER_COUNT>::size_type register_index = (opcode & 0x0F00) >> 8;
+            const auto value = static_cast<uint8_t>(opcode & 0x00FF);
+            this->registers[register_index] += value;
             break;
         }
         case 0x1000: {
             const auto position = opcode & 0x0FFF;
-            std::cout << "Jump to " << position << std::endl;
             this->program_counter = static_cast<size_t>(position);
             break;
         }
