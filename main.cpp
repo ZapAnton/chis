@@ -97,7 +97,14 @@ void VirtualMachine::run() {
             break;
         }
         case 0x6000: {
-            const auto reg = opcode & 0x0F00;
+            const auto reg = (opcode & 0x0F00) >> 8;
+            const auto value = opcode & 0x00FF;
+            std::cout << "Set value " << value << " in register " << reg
+                      << std::endl;
+            break;
+        }
+        case 0x7000: {
+            const auto reg = (opcode & 0x0F00) >> 8;
             const auto value = opcode & 0x00FF;
             std::cout << "Add value " << value << " to register " << reg
                       << std::endl;
