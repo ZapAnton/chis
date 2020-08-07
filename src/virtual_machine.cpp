@@ -73,7 +73,12 @@ void VirtualMachine::run() {
             break;
         }
         case 0xD000: {
-            std::cout << "Display" << std::endl;
+            const std::array<uint8_t, EMULATED_REGISTER_COUNT>::size_type register_index_x = (opcode & 0x0F00) >> 8;
+            const std::array<uint8_t, EMULATED_REGISTER_COUNT>::size_type register_index_y = (opcode & 0x00F0) >> 4;
+            const auto height = static_cast<uint8_t>(opcode & 0x000F);
+            const auto x = this->registers[register_index_x];
+            const auto y = this->registers[register_index_y];
+            this->display->set_pixel(x, y, height);
             break;
         }
         case 0x6000: {
