@@ -1,7 +1,7 @@
-#include "SDL2/SDL.h"
 #include "virtual_machine.h"
 #include <filesystem>
 #include <iostream>
+#include <sdl_display.h>
 
 int main(int argc, char **argv) {
     if (argc < 2) {
@@ -22,6 +22,8 @@ int main(int argc, char **argv) {
         virtual_machine.dump_memory();
         return 0;
     }
+    SDLDisplay sdl_display;
+    virtual_machine.set_display(&sdl_display);
     virtual_machine.run();
     return 0;
 }

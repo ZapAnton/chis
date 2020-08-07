@@ -1,11 +1,11 @@
 #ifndef VIRTUAL_MACHINE_H
 #define VIRTUAL_MACHINE_H
 
+#include <abstract_display.h>
 #include <array>
 #include <cstddef>
 #include <filesystem>
 #include <stack>
-#include <abstract_display.h>
 
 using Opcode = unsigned short;
 const size_t EMULATED_MEMORY_SIZE = 4096;
@@ -22,13 +22,14 @@ class VirtualMachine {
     std::array<std::byte, EMULATED_MEMORY_SIZE> memory;
     std::array<uint8_t, EMULATED_REGISTER_COUNT> registers;
     std::stack<uint16_t> stack;
-    AbstractDisplay* display;
+    AbstractDisplay *display;
 
   public:
     VirtualMachine();
     void load_rom(const std::filesystem::path &rom_file_path);
     void run();
     void dump_memory();
+    void set_display(AbstractDisplay *display);
 };
 
 #endif

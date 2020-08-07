@@ -13,8 +13,8 @@ void print_opcode_hex(const Opcode opcode) {
 
 VirtualMachine::VirtualMachine()
     : rom_size{0}, program_counter{RESERVED_MEMORY_SPACE}, index_register{0},
-      delay_timer{std::byte{0}},
-      sound_timer{std::byte{0}}, memory{}, registers{}, stack{}, display{nullptr} {}
+      delay_timer{std::byte{0}}, sound_timer{std::byte{0}}, memory{},
+      registers{}, stack{}, display{nullptr} {}
 
 void VirtualMachine::load_rom(const std::filesystem::path &rom_file_path) {
     // TODO: Add error handling
@@ -45,7 +45,14 @@ void VirtualMachine::dump_memory() {
     std::cout << std::endl;
 }
 
+void VirtualMachine::set_display(AbstractDisplay *display) {
+    this->display = display;
+}
+
 void VirtualMachine::run() {
+    if (this->display == nullptr) {
+        return;
+    }
     while (true) {
         if (this->program_counter >= EMULATED_MEMORY_SIZE) {
             break;
@@ -70,13 +77,15 @@ void VirtualMachine::run() {
             break;
         }
         case 0x6000: {
-            const std::array<uint8_t, EMULATED_REGISTER_COUNT>::size_type register_index = (opcode & 0x0F00) >> 8;
+            const std::array<uint8_t, EMULATED_REGISTER_COUNT>::size_type
+                register_index = (opcode & 0x0F00) >> 8;
             const auto value = static_cast<uint8_t>(opcode & 0x00FF);
             this->registers[register_index] = value;
             break;
         }
         case 0x7000: {
-            const std::array<uint8_t, EMULATED_REGISTER_COUNT>::size_type register_index = (opcode & 0x0F00) >> 8;
+            const std::array<uint8_t, EMULATED_REGISTER_COUNT>::size_type
+                register_index = (opcode & 0x0F00) >> 8;
             const auto value = static_cast<uint8_t>(opcode & 0x00FF);
             this->registers[register_index] += value;
             break;
