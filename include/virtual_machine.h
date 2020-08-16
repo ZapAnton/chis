@@ -11,6 +11,42 @@ using Opcode = unsigned short;
 const size_t EMULATED_MEMORY_SIZE = 4096;
 const size_t EMULATED_REGISTER_COUNT = 16;
 const size_t RESERVED_MEMORY_SPACE = 0x200;
+const size_t FONT_OFFSET = 0x20;
+const size_t FONT_ARRAY_SIZE = 80;
+const std::array<std::byte, FONT_ARRAY_SIZE> FONT{
+    std::byte{0xF0}, std::byte{0x90}, std::byte{0x90},
+    std::byte{0x90}, std::byte{0xF0}, // 0
+    std::byte{0x20}, std::byte{0x60}, std::byte{0x20},
+    std::byte{0x20}, std::byte{0x70}, // 1
+    std::byte{0xF0}, std::byte{0x10}, std::byte{0xF0},
+    std::byte{0x80}, std::byte{0xF0}, // 2
+    std::byte{0xF0}, std::byte{0x10}, std::byte{0xF0},
+    std::byte{0x10}, std::byte{0xF0}, // 3
+    std::byte{0x90}, std::byte{0x90}, std::byte{0xF0},
+    std::byte{0x10}, std::byte{0x10}, // 4
+    std::byte{0xF0}, std::byte{0x80}, std::byte{0xF0},
+    std::byte{0x10}, std::byte{0xF0}, // 5
+    std::byte{0xF0}, std::byte{0x80}, std::byte{0xF0},
+    std::byte{0x90}, std::byte{0xF0}, // 6
+    std::byte{0xF0}, std::byte{0x10}, std::byte{0x20},
+    std::byte{0x40}, std::byte{0x40}, // 7
+    std::byte{0xF0}, std::byte{0x90}, std::byte{0xF0},
+    std::byte{0x90}, std::byte{0xF0}, // 8
+    std::byte{0xF0}, std::byte{0x90}, std::byte{0xF0},
+    std::byte{0x10}, std::byte{0xF0}, // 9
+    std::byte{0xF0}, std::byte{0x90}, std::byte{0xF0},
+    std::byte{0x90}, std::byte{0x90}, // A
+    std::byte{0xE0}, std::byte{0x90}, std::byte{0xE0},
+    std::byte{0x90}, std::byte{0xE0}, // B
+    std::byte{0xF0}, std::byte{0x80}, std::byte{0x80},
+    std::byte{0x80}, std::byte{0xF0}, // C
+    std::byte{0xE0}, std::byte{0x90}, std::byte{0x90},
+    std::byte{0x90}, std::byte{0xE0}, // D
+    std::byte{0xF0}, std::byte{0x80}, std::byte{0xF0},
+    std::byte{0x80}, std::byte{0xF0}, // E
+    std::byte{0xF0}, std::byte{0x80}, std::byte{0xF0},
+    std::byte{0x80}, std::byte{0x80}, // F
+};
 
 class VirtualMachine {
   private:

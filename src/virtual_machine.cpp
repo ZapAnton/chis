@@ -14,7 +14,11 @@ void print_opcode_hex(const Opcode opcode) {
 VirtualMachine::VirtualMachine()
     : rom_size{0}, program_counter{RESERVED_MEMORY_SPACE}, index_register{0},
       delay_timer{std::byte{0}}, sound_timer{std::byte{0}}, memory{},
-      registers{}, stack{}, display{nullptr} {}
+      registers{}, stack{}, display{nullptr} {
+    for (size_t i = 0; i < FONT.size(); ++i) {
+        this->memory[i + FONT_OFFSET] = FONT[i];
+    }
+}
 
 void VirtualMachine::load_rom(const std::filesystem::path &rom_file_path) {
     // TODO: Add error handling
@@ -73,8 +77,10 @@ void VirtualMachine::run() {
             break;
         }
         case 0xD000: {
-            const std::array<uint8_t, EMULATED_REGISTER_COUNT>::size_type register_index_x = (opcode & 0x0F00) >> 8;
-            const std::array<uint8_t, EMULATED_REGISTER_COUNT>::size_type register_index_y = (opcode & 0x00F0) >> 4;
+            const std::array<uint8_t, EMULATED_REGISTER_COUNT>::size_type
+                register_index_x = (opcode & 0x0F00) >> 8;
+            const std::array<uint8_t, EMULATED_REGISTER_COUNT>::size_type
+                register_index_y = (opcode & 0x00F0) >> 4;
             const auto height = static_cast<uint8_t>(opcode & 0x000F);
             const auto x = this->registers[register_index_x];
             const auto y = this->registers[register_index_y];
