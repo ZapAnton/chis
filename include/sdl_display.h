@@ -5,10 +5,16 @@
 #include "abstract_display.h"
 
 class SDLDisplay : public AbstractDisplay {
+  private:
+    const uint8_t SCREEN_UPSCALE = 10;
+
   public:
     SDLDisplay();
-    void set_pixel(const uint8_t x, const uint8_t y, const uint8_t n);
+    ~SDLDisplay();
+    void draw(std::array<uint8_t, 32 * 64> &screen);
     void clear_screen();
+    SDL_Window *window = nullptr;
+    SDL_Renderer *renderer = nullptr;
 };
 
 #endif

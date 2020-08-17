@@ -14,7 +14,7 @@ void print_opcode_hex(const Opcode opcode) {
 VirtualMachine::VirtualMachine()
     : rom_size{0}, program_counter{RESERVED_MEMORY_SPACE}, index_register{0},
       delay_timer{std::byte{0}}, sound_timer{std::byte{0}}, memory{},
-      registers{}, stack{}, display{nullptr} {
+      registers{}, screen{0}, stack{}, display{nullptr} {
     for (size_t i = 0; i < FONT.size(); ++i) {
         this->memory[i + FONT_OFFSET] = FONT[i];
     }
@@ -84,7 +84,20 @@ void VirtualMachine::run() {
             const auto height = static_cast<uint8_t>(opcode & 0x000F);
             const auto x = this->registers[register_index_x];
             const auto y = this->registers[register_index_y];
-            this->display->set_pixel(x, y, height);
+            this->registers[0xF] = 0;
+            for (size_t i = 0; i < height; ++i) {
+                const auto pixel = static_cast<uint16_t>(
+                    this->memory[this->index_register + i]);
+                for (size_t j = 0; j < 8; ++j) {
+                    if ((pixel & (0x80 >> j)) != 0) {
+                        if (this->screen[(x + j + ((y + i) * 64))] == 1) {
+                            this->registers[0xF] = 1;
+                        }
+                        this->screen[(x + j + ((y + i) * 64))] ^= 1;
+                    }
+                }
+            }
+            this->display->draw(this->screen);
             break;
         }
         case 0x6000: {

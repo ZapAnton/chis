@@ -52,11 +52,12 @@ class VirtualMachine {
   private:
     size_t rom_size;
     size_t program_counter;
-    unsigned short index_register;
+    size_t index_register;
     std::byte delay_timer;
     std::byte sound_timer;
     std::array<std::byte, EMULATED_MEMORY_SIZE> memory;
     std::array<uint8_t, EMULATED_REGISTER_COUNT> registers;
+    std::array<uint8_t, 32 * 64> screen;
     std::stack<uint16_t> stack;
     AbstractDisplay *display;
 
