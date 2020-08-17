@@ -19,9 +19,18 @@ SDLDisplay::SDLDisplay() {
         return;
     }
     this->renderer = SDL_CreateRenderer(this->window, -1, 0);
-    SDL_RenderClear(this->renderer);
-    SDL_SetRenderDrawColor(this->renderer, 0, 0, 0, 255);
-    SDL_RenderPresent(this->renderer);
+    SDL_RenderSetLogicalSize(this->renderer,
+                             this->DISPLAY_WIDTH * this->SCREEN_UPSCALE,
+                             this->DISPLAY_HEIGHT * this->SCREEN_UPSCALE);
+    this->texture = SDL_CreateTexture(
+        this->renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
+        this->DISPLAY_WIDTH, this->DISPLAY_HEIGHT);
+    if (this->texture == nullptr) {
+        std::cerr << "SDL could not create texture! SDL_Error: "
+                  << SDL_GetError() << std::endl;
+        SDL_Quit();
+        return;
+    }
 }
 
 SDLDisplay::~SDLDisplay() {
@@ -33,5 +42,12 @@ SDLDisplay::~SDLDisplay() {
 void SDLDisplay::clear_screen() { return; }
 
 void SDLDisplay::draw(std::array<uint8_t, 32 * 64> &screen) {
-    std::cout << screen[0] << std::endl;
+    std::array<uint32_t, 32 * 64> pixels{0};
+    for (size_t i = 0; i < pixels.size(); ++i) {
+        pixels[i] = (screen[i] == 0) ? 0xFF000000 : 0xFFFFFFFF;
+    }
+    SDL_UpdateTexture(this->texture, NULL, &pixels, 64 * sizeof(uint32_t));
+    SDL_RenderClear(this->renderer);
+    SDL_RenderCopy(this->renderer, this->texture, NULL, NULL);
+    SDL_RenderPresent(this->renderer);
 }

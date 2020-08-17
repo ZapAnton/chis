@@ -59,14 +59,18 @@ class VirtualMachine {
     std::array<uint8_t, EMULATED_REGISTER_COUNT> registers;
     std::array<uint8_t, 32 * 64> screen;
     std::stack<uint16_t> stack;
-    AbstractDisplay *display;
+    bool is_display_redrawn;
 
   public:
     VirtualMachine();
     void load_rom(const std::filesystem::path &rom_file_path);
-    void run();
+    void run_cycle();
     void dump_memory();
-    void set_display(AbstractDisplay *display);
+    void set_is_display_redrawn(const bool is_display_redrawn) {
+        this->is_display_redrawn = is_display_redrawn;
+    }
+    bool get_is_display_redrawn() { return this->is_display_redrawn; }
+    std::array<uint8_t, 32 * 64> &get_screen() { return this->screen; }
 };
 
 #endif

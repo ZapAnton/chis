@@ -23,7 +23,32 @@ int main(int argc, char **argv) {
         return 0;
     }
     SDLDisplay sdl_display;
-    virtual_machine.set_display(&sdl_display);
-    virtual_machine.run();
+    bool game_running = true;
+    while (game_running) {
+        // virtual_machine.run_cycle();
+        SDL_Event event;
+        SDL_PollEvent(&event);
+        switch (event.type) {
+        case SDL_QUIT:
+            game_running = false;
+            break;
+        case SDL_KEYDOWN: {
+            switch (event.key.keysym.sym) {
+            case SDLK_ESCAPE:
+                game_running = false;
+                break;
+            default:
+                break;
+            }
+            break;
+        }
+        default:
+            break;
+        }
+        if (virtual_machine.get_is_display_redrawn()) {
+            virtual_machine.set_is_display_redrawn(false);
+            sdl_display.draw(virtual_machine.get_screen());
+        }
+    }
     return 0;
 }
