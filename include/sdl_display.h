@@ -6,7 +6,7 @@
 
 class SDLDisplay : public AbstractDisplay {
   private:
-    const uint8_t SCREEN_UPSCALE = 10;
+    const uint8_t SCREEN_UPSCALE = 20;
 
   public:
     SDLDisplay();
