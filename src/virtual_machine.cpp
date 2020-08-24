@@ -59,7 +59,7 @@ void VirtualMachine::run_cycle() {
         static_cast<Opcode>((std::to_integer<unsigned short>(byte_1) << 8) |
                             std::to_integer<unsigned short>(byte_2));
     this->program_counter += 2;
-    print_opcode_hex(opcode);
+    // print_opcode_hex(opcode);
     if (opcode == 0x0000) {
         return;
     }
@@ -89,6 +89,7 @@ void VirtualMachine::run_cycle() {
                 }
             }
         }
+        this->set_is_display_redrawn(true);
         break;
     }
     case 0x6000: {
@@ -113,6 +114,10 @@ void VirtualMachine::run_cycle() {
     case 0x0000: {
         switch (opcode & 0x000F) {
         case 0x0000: {
+            this->set_is_display_redrawn(true);
+            for (auto &pixel : this->screen) {
+                pixel = 0;
+            }
             std::cout << "Clear screen" << std::endl;
             break;
         }

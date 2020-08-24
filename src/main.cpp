@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
     SDLDisplay sdl_display;
     bool game_running = true;
     while (game_running) {
-        // virtual_machine.run_cycle();
+        virtual_machine.run_cycle();
         SDL_Event event;
         SDL_PollEvent(&event);
         switch (event.type) {
