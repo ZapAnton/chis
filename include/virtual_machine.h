@@ -13,6 +13,7 @@ const size_t EMULATED_REGISTER_COUNT = 16;
 const size_t RESERVED_MEMORY_SPACE = 0x200;
 const size_t FONT_OFFSET = 0x20;
 const size_t FONT_ARRAY_SIZE = 80;
+const size_t KEYPAD_SIZE = 16;
 const std::array<std::byte, FONT_ARRAY_SIZE> FONT{
     std::byte{0xF0}, std::byte{0x90}, std::byte{0x90},
     std::byte{0x90}, std::byte{0xF0}, // 0
@@ -58,6 +59,7 @@ class VirtualMachine {
     std::array<std::byte, EMULATED_MEMORY_SIZE> memory;
     std::array<uint8_t, EMULATED_REGISTER_COUNT> registers;
     std::array<uint8_t, 32 * 64> screen;
+    std::array<uint8_t, KEYPAD_SIZE> keypad;
     std::stack<uint16_t> stack;
     bool is_display_redrawn;
 
@@ -71,6 +73,7 @@ class VirtualMachine {
     }
     bool get_is_display_redrawn() { return this->is_display_redrawn; }
     std::array<uint8_t, 32 * 64> &get_screen() { return this->screen; }
+    void set_keypad_value(const size_t index, const uint8_t value);
 };
 
 #endif

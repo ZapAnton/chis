@@ -51,3 +51,14 @@ void SDLDisplay::draw(std::array<uint8_t, 32 * 64> &screen) {
     SDL_RenderCopy(this->renderer, this->texture, NULL, NULL);
     SDL_RenderPresent(this->renderer);
 }
+
+std::optional<size_t> SDLDisplay::get_key_index(const SDL_Keycode keycode) {
+    std::optional<size_t> key_index{std::nullopt};
+    for (size_t i = 0; i < this->keypad.size(); ++i) {
+        if (keycode == this->keypad[i]) {
+            key_index = i;
+            break;
+        }
+    }
+    return key_index;
+}

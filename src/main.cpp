@@ -26,8 +26,14 @@ int main(int argc, char **argv) {
     bool game_running = true;
     while (game_running) {
         virtual_machine.run_cycle();
+        if (virtual_machine.get_is_display_redrawn()) {
+            virtual_machine.set_is_display_redrawn(false);
+            sdl_display.draw(virtual_machine.get_screen());
+        }
         SDL_Event event;
-        SDL_PollEvent(&event);
+        if (SDL_PollEvent(&event) != 1) {
+            continue;
+        }
         switch (event.type) {
         case SDL_QUIT:
             game_running = false;
@@ -37,17 +43,26 @@ int main(int argc, char **argv) {
             case SDLK_ESCAPE:
                 game_running = false;
                 break;
-            default:
-                break;
+            default: {
+                const auto key_index =
+                    sdl_display.get_key_index(event.key.keysym.sym);
+                if (key_index) {
+                    virtual_machine.set_keypad_value(key_index.value(), 1);
+                }
+            } break;
+            }
+            break;
+        }
+        case SDL_KEYUP: {
+            const auto key_index =
+                sdl_display.get_key_index(event.key.keysym.sym);
+            if (key_index) {
+                virtual_machine.set_keypad_value(key_index.value(), 0);
             }
             break;
         }
         default:
             break;
-        }
-        if (virtual_machine.get_is_display_redrawn()) {
-            virtual_machine.set_is_display_redrawn(false);
-            sdl_display.draw(virtual_machine.get_screen());
         }
     }
     return 0;

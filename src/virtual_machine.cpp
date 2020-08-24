@@ -14,7 +14,7 @@ void print_opcode_hex(const Opcode opcode) {
 VirtualMachine::VirtualMachine()
     : rom_size{0}, program_counter{RESERVED_MEMORY_SPACE}, index_register{0},
       delay_timer{std::byte{0}}, sound_timer{std::byte{0}}, memory{},
-      registers{}, screen{0}, stack{}, is_display_redrawn{false} {
+      registers{}, screen{0}, keypad{0}, stack{}, is_display_redrawn{false} {
     for (size_t i = 0; i < FONT.size(); ++i) {
         this->memory[i + FONT_OFFSET] = FONT[i];
     }
@@ -47,6 +47,10 @@ void VirtualMachine::dump_memory() {
                   << std::dec << " ";
     }
     std::cout << std::endl;
+}
+
+void VirtualMachine::set_keypad_value(const size_t index, const uint8_t value) {
+    this->keypad[index] = value;
 }
 
 void VirtualMachine::run_cycle() {
