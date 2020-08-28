@@ -110,6 +110,35 @@ void VirtualMachine::run_cycle() {
         this->registers[register_index] += value;
         break;
     }
+    case 0x3000: {
+        const std::array<uint8_t, EMULATED_REGISTER_COUNT>::size_type
+            register_index = (opcode & 0x0F00) >> 8;
+        const auto value = static_cast<uint8_t>(opcode & 0x00FF);
+        if (this->registers[register_index] == value) {
+            this->program_counter += 2;
+        }
+        break;
+    }
+    case 0x4000: {
+        const std::array<uint8_t, EMULATED_REGISTER_COUNT>::size_type
+            register_index = (opcode & 0x0F00) >> 8;
+        const auto value = static_cast<uint8_t>(opcode & 0x00FF);
+        if (this->registers[register_index] != value) {
+            this->program_counter += 2;
+        }
+        break;
+    }
+    case 0x5000: {
+        const std::array<uint8_t, EMULATED_REGISTER_COUNT>::size_type
+            register_index_1 = (opcode & 0x0F00) >> 8;
+        const std::array<uint8_t, EMULATED_REGISTER_COUNT>::size_type
+            register_index_2 = (opcode & 0x00F0) >> 4;
+        if (this->registers[register_index_1] ==
+            this->registers[register_index_2]) {
+            this->program_counter += 2;
+        }
+        break;
+    }
     case 0x2000: {
         const auto position = static_cast<size_t>(opcode & 0x0FFF);
         this->stack.push(position);

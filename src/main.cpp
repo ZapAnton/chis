@@ -1,8 +1,8 @@
 #include "virtual_machine.h"
+#include <chrono>
 #include <filesystem>
 #include <iostream>
 #include <sdl_display.h>
-#include <chrono>
 #include <thread>
 
 const int SLEEP_TIME = 17;
