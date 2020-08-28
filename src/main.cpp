@@ -5,7 +5,7 @@
 #include <chrono>
 #include <thread>
 
-const int SLEEP_TIME = 100;
+const int SLEEP_TIME = 17;
 
 int main(int argc, char **argv) {
     if (argc < 2) {
