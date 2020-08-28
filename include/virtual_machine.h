@@ -60,7 +60,7 @@ class VirtualMachine {
     std::array<uint8_t, EMULATED_REGISTER_COUNT> registers;
     std::array<uint8_t, 32 * 64> screen;
     std::array<uint8_t, KEYPAD_SIZE> keypad;
-    std::stack<uint16_t> stack;
+    std::stack<size_t> stack;
     bool is_display_redrawn;
 
   public:

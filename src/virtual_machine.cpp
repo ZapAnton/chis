@@ -110,6 +110,12 @@ void VirtualMachine::run_cycle() {
         this->registers[register_index] += value;
         break;
     }
+    case 0x2000: {
+        const auto position = static_cast<size_t>(opcode & 0x0FFF);
+        this->stack.push(position);
+        this->program_counter = position;
+        break;
+    }
     case 0x1000: {
         const auto position = opcode & 0x0FFF;
         this->program_counter = static_cast<size_t>(position);
@@ -126,7 +132,8 @@ void VirtualMachine::run_cycle() {
             break;
         }
         case 0x000E: {
-            std::cout << "Return from subrutine" << std::endl;
+            this->program_counter = this->stack.top();
+            this->stack.pop();
             break;
         }
         default: {
