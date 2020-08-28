@@ -2,6 +2,10 @@
 #include <filesystem>
 #include <iostream>
 #include <sdl_display.h>
+#include <chrono>
+#include <thread>
+
+const int SLEEP_TIME = 100;
 
 int main(int argc, char **argv) {
     if (argc < 2) {
@@ -64,6 +68,7 @@ int main(int argc, char **argv) {
         default:
             break;
         }
+        std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_TIME));
     }
     return 0;
 }
