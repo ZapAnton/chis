@@ -176,6 +176,15 @@ void VirtualMachine::run_cycle() {
                 this->index_register = this->registers[register_index_1] * 5 + FONT_OFFSET;
                 break;
             }
+            case 0x33: {
+                auto value = static_cast<uint8_t>(this->registers[register_index_1]);
+                this->memory[this->index_register + 2] = std::byte{static_cast<uint8_t>(value % 10)};
+                value /= 10;
+                this->memory[this->index_register + 1] = std::byte{static_cast<uint8_t>(value % 10)};
+                value /= 10;
+                this->memory[this->index_register] = std::byte{static_cast<uint8_t>(value % 10)};
+                break;
+            }
             default:
                 break;
         }
