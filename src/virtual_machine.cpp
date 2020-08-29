@@ -14,8 +14,8 @@ void print_opcode_hex(const Opcode opcode) {
 
 VirtualMachine::VirtualMachine()
     : rom_size{0}, program_counter{RESERVED_MEMORY_SPACE}, index_register{0},
-      delay_timer{std::byte{0}}, sound_timer{std::byte{0}}, memory{},
-      registers{}, screen{0}, keypad{0}, stack{}, is_display_redrawn{false} {
+      delay_timer{0}, sound_timer{0}, memory{}, registers{}, screen{0},
+      keypad{0}, stack{}, is_display_redrawn{false} {
     for (size_t i = 0; i < FONT.size(); ++i) {
         this->memory[i + FONT_OFFSET] = FONT[i];
     }
@@ -116,20 +116,20 @@ void VirtualMachine::run_cycle() {
             register_index_1 = (opcode & 0x0F00) >> 8;
         const auto operation_type = opcode & 0x00FF;
         switch (operation_type) {
-            case 0x9E: {
-                if (this->keypad[this->registers[register_index_1]] != 0) {
-                    this->program_counter += 2;
-                }
-                break;
+        case 0x9E: {
+            if (this->keypad[this->registers[register_index_1]] != 0) {
+                this->program_counter += 2;
             }
-            case 0xA1: {
-                if (this->keypad[this->registers[register_index_1]] == 0) {
-                    this->program_counter += 2;
-                }
-                break;
+            break;
+        }
+        case 0xA1: {
+            if (this->keypad[this->registers[register_index_1]] == 0) {
+                this->program_counter += 2;
             }
-            default:
-                break;
+            break;
+        }
+        default:
+            break;
         }
         break;
     }
@@ -300,5 +300,11 @@ void VirtualMachine::run_cycle() {
         std::cout << "Unknown opcode " << opcode << std::endl;
         break;
     }
+    }
+    if (this->delay_timer > 0) {
+        this->delay_timer -= 1;
+    }
+    if (this->sound_timer > 0) {
+        this->sound_timer -= 1;
     }
 }
