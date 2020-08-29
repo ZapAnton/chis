@@ -72,6 +72,11 @@ void VirtualMachine::run_cycle() {
         this->index_register = opcode & 0x0FFF;
         break;
     }
+    case 0xB000: {
+        this->index_register = opcode & 0x0FFF;
+        this->index_register += this->registers[0];
+        break;
+    }
     case 0xD000: {
         const std::array<uint8_t, EMULATED_REGISTER_COUNT>::size_type
             register_index_x = (opcode & 0x0F00) >> 8;
