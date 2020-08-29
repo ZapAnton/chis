@@ -133,6 +133,28 @@ void VirtualMachine::run_cycle() {
         }
         break;
     }
+    case 0xF000 {
+        const std::array<uint8_t, EMULATED_REGISTER_COUNT>::size_type
+            register_index_1 = (opcode & 0x0F00) >> 8;
+        const auto operation_type = opcode & 0x00FF;
+        switch (operation_type) {
+            case 0x07: {
+                this->registers[register_index_1] = this->delay_timer;
+                break;
+            }
+            case 0x15: {
+                this->delay_timer = this->registers[register_index_1];
+                break;
+            }
+            case 0x18: {
+                this->sound_timer = this->registers[register_index_1];
+                break;
+            }
+            default:
+                break;
+        }
+        break;
+    }
     case 0x6000: {
         const std::array<uint8_t, EMULATED_REGISTER_COUNT>::size_type
             register_index = (opcode & 0x0F00) >> 8;
