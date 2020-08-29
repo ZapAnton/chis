@@ -138,55 +138,76 @@ void VirtualMachine::run_cycle() {
             register_index_1 = (opcode & 0x0F00) >> 8;
         const auto operation_type = opcode & 0x00FF;
         switch (operation_type) {
-            case 0x07: {
-                this->registers[register_index_1] = this->delay_timer;
-                break;
+        case 0x07: {
+            this->registers[register_index_1] = this->delay_timer;
+            break;
+        }
+        case 0x15: {
+            this->delay_timer = this->registers[register_index_1];
+            break;
+        }
+        case 0x18: {
+            this->sound_timer = this->registers[register_index_1];
+            break;
+        }
+        case 0x1E: {
+            if (this->index_register + this->registers[register_index_1] >
+                0xFFF) {
+                this->registers[0xF] = 1;
             }
-            case 0x15: {
-                this->delay_timer = this->registers[register_index_1];
-                break;
-            }
-            case 0x18: {
-                this->sound_timer = this->registers[register_index_1];
-                break;
-            }
-            case 0x1E: {
-                if (this->index_register + this->registers[register_index_1] > 0xFFF) {
-                    this->registers[0xF] = 1;
+            this->index_register =
+                this->index_register + this->registers[register_index_1];
+            break;
+        }
+        case 0x0A: {
+            // TODO: Refactor into more functional style
+            bool key_pressed = false;
+            for (const auto &key : this->keypad) {
+                if (key == 1) {
+                    key_pressed = true;
+                    this->registers[register_index_1] = key;
+                    break;
                 }
-                this->index_register = this->index_register + this->registers[register_index_1];
-                break;
             }
-            case 0x0A: {
-                // TODO: Refactor into more functional style
-                bool key_pressed = false;
-                for (const auto& key: this->keypad) {
-                    if (key == 1) {
-                        key_pressed = true;
-                        this->registers[register_index_1] = key;
-                        break;
-                    }
-                }
-                if (!key_pressed) {
-                    this->program_counter -= 2;
-                }
-                break;
+            if (!key_pressed) {
+                this->program_counter -= 2;
             }
-            case 0x29: {
-                this->index_register = this->registers[register_index_1] * 5 + FONT_OFFSET;
-                break;
+            break;
+        }
+        case 0x29: {
+            this->index_register =
+                this->registers[register_index_1] * 5 + FONT_OFFSET;
+            break;
+        }
+        case 0x33: {
+            auto value =
+                static_cast<uint8_t>(this->registers[register_index_1]);
+            this->memory[this->index_register + 2] =
+                std::byte{static_cast<uint8_t>(value % 10)};
+            value /= 10;
+            this->memory[this->index_register + 1] =
+                std::byte{static_cast<uint8_t>(value % 10)};
+            value /= 10;
+            this->memory[this->index_register] =
+                std::byte{static_cast<uint8_t>(value % 10)};
+            break;
+        }
+        case 0x55: {
+            for (size_t i = 0; i <= register_index_1; ++i) {
+                this->memory[this->index_register + i] =
+                    std::byte{this->registers[i]};
             }
-            case 0x33: {
-                auto value = static_cast<uint8_t>(this->registers[register_index_1]);
-                this->memory[this->index_register + 2] = std::byte{static_cast<uint8_t>(value % 10)};
-                value /= 10;
-                this->memory[this->index_register + 1] = std::byte{static_cast<uint8_t>(value % 10)};
-                value /= 10;
-                this->memory[this->index_register] = std::byte{static_cast<uint8_t>(value % 10)};
-                break;
+            break;
+        }
+        case 0x65: {
+            for (size_t i = 0; i <= register_index_1; ++i) {
+                this->registers[i] = std::to_integer<uint8_t>(
+                    this->memory[this->index_register + i]);
             }
-            default:
-                break;
+            break;
+        }
+        default:
+            break;
         }
         break;
     }
