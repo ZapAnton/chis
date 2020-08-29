@@ -1,5 +1,6 @@
 #include "virtual_machine.h"
 #include <algorithm>
+#include <ctime>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -18,6 +19,7 @@ VirtualMachine::VirtualMachine()
     for (size_t i = 0; i < FONT.size(); ++i) {
         this->memory[i + FONT_OFFSET] = FONT[i];
     }
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
 }
 
 void VirtualMachine::load_rom(const std::filesystem::path &rom_file_path) {
@@ -75,6 +77,14 @@ void VirtualMachine::run_cycle() {
     case 0xB000: {
         this->index_register = opcode & 0x0FFF;
         this->index_register += this->registers[0];
+        break;
+    }
+    case 0xC000: {
+        const std::array<uint8_t, EMULATED_REGISTER_COUNT>::size_type
+            register_index_1 = (opcode & 0x0F00) >> 8;
+        const auto value = static_cast<uint8_t>(opcode & 0x00FF);
+        this->registers[register_index_1] =
+            static_cast<uint8_t>((std::rand() % 266) & value);
         break;
     }
     case 0xD000: {
