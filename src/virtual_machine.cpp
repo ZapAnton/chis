@@ -157,6 +157,21 @@ void VirtualMachine::run_cycle() {
                 this->index_register = this->index_register + this->registers[register_index_1];
                 break;
             }
+            case 0x0A: {
+                // TODO: Refactor into more functional style
+                bool key_pressed = false;
+                for (const auto& key: this->keypad) {
+                    if (key == 1) {
+                        key_pressed = true;
+                        this->registers[register_index_1] = key;
+                        break;
+                    }
+                }
+                if (!key_pressed) {
+                    this->program_counter -= 2;
+                }
+                break;
+            }
             default:
                 break;
         }
