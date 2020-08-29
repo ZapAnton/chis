@@ -133,7 +133,7 @@ void VirtualMachine::run_cycle() {
         }
         break;
     }
-    case 0xF000 {
+    case 0xF000: {
         const std::array<uint8_t, EMULATED_REGISTER_COUNT>::size_type
             register_index_1 = (opcode & 0x0F00) >> 8;
         const auto operation_type = opcode & 0x00FF;
@@ -148,6 +148,13 @@ void VirtualMachine::run_cycle() {
             }
             case 0x18: {
                 this->sound_timer = this->registers[register_index_1];
+                break;
+            }
+            case 0x1E: {
+                if (this->index_register + this->registers[register_index_1] > 0xFFF) {
+                    this->registers[0xF] = 1;
+                }
+                this->index_register = this->index_register + this->registers[register_index_1];
                 break;
             }
             default:
