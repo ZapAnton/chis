@@ -110,6 +110,82 @@ void VirtualMachine::run_cycle() {
         this->registers[register_index] += value;
         break;
     }
+    case 0x8000: {
+        const std::array<uint8_t, EMULATED_REGISTER_COUNT>::size_type
+            register_index_1 = (opcode & 0x0F00) >> 8;
+        const std::array<uint8_t, EMULATED_REGISTER_COUNT>::size_type
+            register_index_2 = (opcode & 0x00F0) >> 4;
+        const auto last_byte = opcode & 0x000F;
+        switch (last_byte) {
+        case 0x0000: {
+            this->registers[register_index_1] =
+                this->registers[register_index_2];
+            break;
+        }
+        case 0x0001: {
+            this->registers[register_index_1] |=
+                this->registers[register_index_2];
+            break;
+        }
+        case 0x0002: {
+            this->registers[register_index_1] &=
+                this->registers[register_index_2];
+            break;
+        }
+        case 0x0003: {
+            this->registers[register_index_1] ^=
+                this->registers[register_index_2];
+            break;
+        }
+        case 0x0004: {
+            const uint16_t sum = this->registers[register_index_1] +
+                                 this->registers[register_index_2];
+            if (sum > 255) {
+                this->registers[0xF] = 1;
+            }
+            this->registers[register_index_1] = static_cast<uint8_t>(sum);
+            break;
+        }
+        case 0x0005: {
+            if (this->registers[register_index_1] >
+                this->registers[register_index_2]) {
+                this->registers[0xF] = 1;
+            }
+            this->registers[register_index_1] =
+                this->registers[register_index_1] -
+                this->registers[register_index_2];
+            break;
+        }
+        case 0x0006: {
+            this->registers[register_index_1] =
+                this->registers[register_index_2];
+            this->registers[0xF] = this->registers[register_index_1] & 0x1;
+            this->registers[register_index_1] >>= 1;
+            break;
+        }
+        case 0x0007: {
+            if (this->registers[register_index_2] >
+                this->registers[register_index_1]) {
+                this->registers[0xF] = 1;
+            }
+            this->registers[register_index_1] =
+                this->registers[register_index_2] -
+                this->registers[register_index_1];
+            break;
+        }
+        case 0x000E: {
+            this->registers[register_index_1] =
+                this->registers[register_index_2];
+            this->registers[0xF] = this->registers[register_index_1] & 0x1;
+            this->registers[register_index_1] <<= 1;
+            break;
+        }
+        default: {
+            break;
+        }
+        }
+        break;
+    }
     case 0x3000: {
         const std::array<uint8_t, EMULATED_REGISTER_COUNT>::size_type
             register_index = (opcode & 0x0F00) >> 8;
