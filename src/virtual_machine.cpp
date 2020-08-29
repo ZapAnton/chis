@@ -359,7 +359,6 @@ void VirtualMachine::run_cycle() {
             for (auto &pixel : this->screen) {
                 pixel = 0;
             }
-            std::cout << "Clear screen" << std::endl;
             break;
         }
         case 0x000E: {
