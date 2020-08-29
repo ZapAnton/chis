@@ -172,6 +172,10 @@ void VirtualMachine::run_cycle() {
                 }
                 break;
             }
+            case 0x29: {
+                this->index_register = this->registers[register_index_1] * 5 + FONT_OFFSET;
+                break;
+            }
             default:
                 break;
         }
