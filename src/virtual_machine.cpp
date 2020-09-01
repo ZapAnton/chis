@@ -342,8 +342,8 @@ void VirtualMachine::run_cycle() {
         break;
     }
     case 0x2000: {
+        this->stack.push(this->program_counter);
         const auto position = static_cast<size_t>(opcode & 0x0FFF);
-        this->stack.push(position);
         this->program_counter = position;
         break;
     }
@@ -362,6 +362,9 @@ void VirtualMachine::run_cycle() {
             break;
         }
         case 0x000E: {
+            if (this->stack.empty()) {
+                break;
+            }
             this->program_counter = this->stack.top();
             this->stack.pop();
             break;
